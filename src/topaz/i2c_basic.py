@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """ I2C basic functions for topaz VPD and registers
+and basic functions to control the relays, ioexpanders.
 """
 
 REG_MAP = [{"name": "READINESS", "addr": 0x04},
