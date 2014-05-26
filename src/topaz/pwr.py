@@ -10,6 +10,7 @@ __all__ = ["PowerSupply"]
 import usbtmc
 import re
 import logging
+import time
 
 vid = 0x0b3e    # kikusui PIA4850 vendor id
 pid = 0x1014    # kikusui PIA4850 product id
@@ -45,6 +46,7 @@ class PowerSupply(object):
     def selectChannel(self, node, ch):
         self.instr.write("NODE {0}".format(node))
         self.instr.write("CH {0}".format(ch))
+        time.sleep(1)
         self._checkerr()
 
     def measureVolt(self):
@@ -61,8 +63,25 @@ class PowerSupply(object):
 
     def set(self, params):
         self.instr.write("VSET {0}".format(params["volt"]))
+        self.instr.write("ISET {0}".format(params["curr"]))
         self.instr.write("OVSET {0}".format(params["ovp"]))
         self.instr.write("OCSET {0}".format(params["ocp"]))
+        self._checkerr()
+
+    def setVolt(self, volt):
+        self.instr.write("VSET {0}".format(volt))
+        self._checkerr()
+
+    def setCurr(self, curr):
+        self.instr.write("ISET {0}".format(curr))
+        self._checkerr()
+
+    def setOVP(self, ovp):
+        self.instr.write("OVSET {0}".format(ovp))
+        self._checkerr()
+
+    def setOCP(self, ocp):
+        self.instr.write("OCSET {0}".format(ocp))
         self._checkerr()
 
     def activateOutput(self):
@@ -75,15 +94,16 @@ class PowerSupply(object):
 
 
 if __name__ == "__main__":
-    import time
 
     ps = PowerSupply()
     ps.selectChannel(node=5, ch=1)
     setting = {"volt": 12.0, "ovp": 13.0, "ocp": 10.0}
     ps.set(setting)
     ps.activateOutput()
-    time.sleep(1)
+    time.sleep(5)
     print ps.measureVolt()
     print ps.measureCurr()
-    time.sleep(1)
-    ps.deactivateOutput()
+    time.sleep(5)
+    #ps.deactivateOutput()
+    print ps.measureVolt()
+    print ps.measureCurr()
